@@ -1,0 +1,28 @@
+---
+description: Clean Architecture and Provider conventions for face_vision
+alwaysApply: true
+---
+
+# Architecture
+
+- Layers: `presentation -> domain <- data`. Domain is pure Dart only.
+- No `package:flutter` or `opencv_dart` imports in `lib/domain/`.
+- OpenCV/FFI only in `lib/data/datasources/`.
+- `data` implements `domain` repository interfaces.
+
+# State management
+
+- Use `provider`: `ChangeNotifier` + `ChangeNotifierProvider`.
+- Widgets: UI only. Flow: widget -> provider -> use case -> repository.
+- No business logic in widgets or `build()`.
+
+# Use cases and entities
+
+- One responsibility per use case; expose `Future<T> call(...)`.
+- Entities are immutable in `lib/domain/entities/`.
+- Map raw OpenCV output to entities in the data layer, not in presentation.
+
+# New code checklist
+
+- Repository interface in domain, implementation in data.
+- Register wiring in `main.dart` composition root only.
