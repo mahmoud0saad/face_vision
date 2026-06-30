@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/face_vision_provider.dart';
 import '../widgets/face_overlay_painter.dart';
 import '../widgets/face_preview_strip.dart';
+import 'live_preview_page.dart';
 
 class CapturePage extends StatelessWidget {
   const CapturePage({super.key});
@@ -14,6 +15,26 @@ class CapturePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Face Vision'),
         actions: [
+          Consumer<FaceVisionProvider>(
+            builder: (context, provider, _) {
+              final canOpen = provider.isServiceRunning &&
+                  !provider.isLiveScanning &&
+                  !provider.isStartingCapture &&
+                  !provider.isStoppingService &&
+                  !provider.isWaitingForFirstFrame;
+               return IconButton(
+                icon: const Icon(Icons.center_focus_strong),
+                tooltip: 'Real-time preview',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const LivePreviewPage(),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
           Consumer<FaceVisionProvider>(
             builder: (context, provider, _) {
               if (!provider.isLiveScanning) return const SizedBox.shrink();

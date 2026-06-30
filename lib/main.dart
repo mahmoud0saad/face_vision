@@ -22,9 +22,8 @@ class FaceVisionApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final client = FaceVisionServiceClient();
-    final liveRepo = LiveSessionRepositoryImpl(
-      FaceVisionLiveSession(client: client),
-    );
+    final session = FaceVisionLiveSession(client: client);
+    final liveRepo = LiveSessionRepositoryImpl(session);
 
     final startVisionService = StartVisionService(liveRepo);
     final stopVisionService = StopVisionService(liveRepo);
@@ -41,8 +40,13 @@ class FaceVisionApp extends StatelessWidget {
       liveSessionRepository: liveRepo,
     );
 
-    return ChangeNotifierProvider<FaceVisionProvider>.value(
-      value: provider,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<FaceVisionProvider>.value(value: provider),
+        // Exposed for the optional real-time preview screen, which integrates
+        // directly with the package's FaceVisionLivePreview widget.
+        Provider<FaceVisionLiveSession>.value(value: session),
+      ],
       child: MaterialApp(
         title: 'Face Vision',
         theme: ThemeData(
